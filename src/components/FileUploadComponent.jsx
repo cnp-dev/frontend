@@ -5,19 +5,29 @@ const FileUploadComponent = () => {
   const [file, setFile] = useState(null);
   const [files, setFiles] = useState([]);
 
+  const backendUrl = 'https://backend-xthc.onrender.com';
+
   const uploadFile = async () => {
     if (!file) return alert("Choose a file first!");
     const formData = new FormData();
     formData.append('file', file);
 
-    await axios.post('http://localhost:5000/upload', formData);
-    setFile(null);
-    fetchFiles();
+    try {
+      await axios.post(`${backendUrl}/upload`, formData);
+      setFile(null);
+      fetchFiles();
+    } catch (error) {
+      alert("Upload failed!");
+    }
   };
 
   const fetchFiles = async () => {
-    const res = await axios.get('http://localhost:5000/files');
-    setFiles(res.data);
+    try {
+      const res = await axios.get(`${backendUrl}/files`);
+      setFiles(res.data);
+    } catch (error) {
+      alert("Failed to fetch files.");
+    }
   };
 
   useEffect(() => {
@@ -35,8 +45,8 @@ const FileUploadComponent = () => {
         {files.map(f => (
           <li key={f._id} className="list-group-item d-flex justify-content-between">
             {f.filename}
-            <a href={`http://localhost:5000/files/${f.filename}`} target="_blank" rel="noopener noreferrer">
-              View/Download
+            <a href={`${backendUrl}/files/${f.filename}`} target="_blank" rel="noopener noreferrer">
+              View / Download
             </a>
           </li>
         ))}
